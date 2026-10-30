@@ -1,0 +1,17 @@
+# .deb Packages
+*.deb
+
+# Source packages
+*.dsc
+*.orig.tar.gz
+*.debian.tar.xz
+
+# Downloaded / extracted upstream release artifacts
+herdr-core-linux-*/
+herdr-core-linux-*.tar.gz
+herdr-core-*/
+/usr/
+/DEBIAN/
+
+.idea/*
+.DS_Store

@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+HERDR_CORE_VERSION := $(shell dpkg-parsechangelog -S Version | sed 's/[-~].*//')
+
+ifeq ($(DEB_HOST_ARCH),arm64)
+HERDR_CORE_RELEASE := herdr-core-linux-aarch64
+else
+HERDR_CORE_RELEASE := herdr-core-linux-x86_64
+endif
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+
+override_dh_auto_build:
+	@case "$(DEB_HOST_ARCH)" in \
+		amd64|arm64) ;; \
+		*) echo "Unsupported architecture: $(DEB_HOST_ARCH)"; exit 1 ;; \
+	esac; \
+	echo "Downloading $(HERDR_CORE_RELEASE).tar.gz..."; \
+	wget -q "https://releases.herdr.dev/core/$(HERDR_CORE_VERSION)/$(HERDR_CORE_RELEASE).tar.gz"; \
+	mkdir -p "$(HERDR_CORE_RELEASE)"; \
+	tar -xzf "$(HERDR_CORE_RELEASE).tar.gz" -C "$(HERDR_CORE_RELEASE)"; \
+	rm -f "$(HERDR_CORE_RELEASE).tar.gz"; \
+	[ -f "$(HERDR_CORE_RELEASE)/herdr-core" ] || { echo "Unexpected tarball layout: $(HERDR_CORE_RELEASE)/herdr-core not found"; exit 1; }
+
+# Only herdr-core: no hc alias, because httpcode already ships /usr/bin/hc
+override_dh_auto_install:
+	install -D -m 755 "$(HERDR_CORE_RELEASE)/herdr-core" debian/herdr-core/usr/bin/herdr-core
+
+override_dh_auto_test:
+
+override_dh_auto_clean:
+	rm -rf herdr-core-linux-x86_64 herdr-core-linux-aarch64 herdr-core-linux-*.tar.gz || true
+
+# Prebuilt static upstream binary: keep it as shipped
+override_dh_strip:
+
+override_dh_dwz:
+
+override_dh_shlibdeps:

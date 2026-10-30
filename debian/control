@@ -1,0 +1,24 @@
+Source: herdr-core
+Section: devel
+Priority: optional
+Maintainer: Dario Griffo <dariogriffo@gmail.com>
+Build-Depends: debhelper-compat (= 13), wget, ca-certificates
+Standards-Version: 4.6.2
+Homepage: https://herdr.dev
+Rules-Requires-Root: no
+
+Package: herdr-core
+Architecture: amd64 arm64
+Depends: ${misc:Depends}, openssh-client
+Recommends: systemd
+Description: terminals for coding agents that stay alive
+ herdr-core runs programs and coding agents in terminals that keep running
+ when the window, the SSH session or the login that started them goes away.
+ Start, list, read, attach to, wait on and send keys to terminals from the
+ command line or through its JSON-RPC API, locally or on other machines over
+ SSH. It is the core the Herdr desktop app (herdr-app) runs its terminals in.
+ .
+ The command is herdr-core. Upstream calls it hc, but this package does not
+ install that alias because httpcode already ships /usr/bin/hc; add
+ `alias hc=herdr-core` to your shell if you want it. Under systemd the core
+ runs as a user service so it outlives your logins.
